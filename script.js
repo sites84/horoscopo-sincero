@@ -160,6 +160,40 @@ const variacoes = {
   }
 };
 
+function personalizarContexto(contexto, signo, campo){
+  if(!contexto) return "";
+  const texto=contexto.toLowerCase();
+  const temas=[
+    {palavras:["ex","termin","separ","término","divórc","divor"],frases:{
+      semana:"E sobre esse assunto afetivo que você contou: não transforme saudade em convite para voltar para uma situação que já mostrou por que terminou. Se houver conversa, observe atitudes — não só palavras.",
+      conselho:"Não procure resposta no perfil de quem você está tentando esquecer. Se a pessoa quisesse falar, existe telefone. Você não precisa virar detetive de story."
+    }},
+    {palavras:["namor","casad","ficante","relacion","crush","amor"],frases:{
+      semana:"Na parte amorosa, você pode perceber uma diferença entre aquilo que a pessoa fala e aquilo que ela realmente faz. Presta atenção no comportamento antes de inventar desculpas para ninguém.",
+      conselho:"Pare de tentar adivinhar o que a outra pessoa sente. Perguntar claramente costuma economizar uma quantidade absurda de drama."
+    }},
+    {palavras:["trabalho","emprego","chefe","faculdade","estudo","prova","escola","curso"],frases:{
+      semana:"No trabalho ou nos estudos, uma pendência que você está empurrando pode voltar para cobrar atenção. Resolva uma parte concreta antes de abrir mais dez abas mentais.",
+      conselho:"Não tente resolver sua vida profissional inteira em uma noite. Escolha a próxima tarefa e faça direito."
+    }},
+    {palavras:["dinheiro","dívida","divida","boleto","finance","salário","salario","conta"],frases:{
+      semana:"Na parte financeira, evite aquela compra que começa com 'eu mereço' e termina com você olhando o saldo em silêncio. Antes de gastar, veja se você realmente precisava.",
+      conselho:"Se o dinheiro está apertado, não trate ansiedade de compra como recompensa. Seu cartão não conhece astrologia."
+    }},
+    {palavras:["família","familia","mãe","mae","pai","irmão","irmao","filho","filha"],frases:{
+      semana:"Uma questão familiar pode exigir uma conversa que você vem adiando. Não tente resolver tudo de uma vez; diga claramente o que está incomodando.",
+      conselho:"Você pode amar alguém e ainda colocar limite. Parentesco não transforma qualquer comportamento em obrigação sua."
+    }},
+    {palavras:["amigo","amizade","amiga","grupo"],frases:{
+      semana:"Uma amizade pode pedir mais clareza do que você costuma oferecer. Se alguma coisa incomodou, falar diretamente é melhor do que acumular pequenas irritações.",
+      conselho:"Não espere que seus amigos adivinhem o que você não contou. Fala."
+    }}
+  ];
+  const tema=temas.find(t=>t.palavras.some(p=>texto.includes(p)));
+  if(!tema) return "";
+  return tema.frases[campo] || "";
+}
+
 function escolherVariacao(signo, campo){
   const lista=variacoes[signo] && variacoes[signo][campo];
   return lista && lista.length ? lista[Math.floor(Math.random()*lista.length)] : signos[signo][campo];
@@ -186,7 +220,9 @@ document.getElementById("generateBtn").onclick=()=>{
   }
   const s=signos[selecionado];
   const verdade=escolherVariacao(selecionado,"verdade");
-  const semana=escolherVariacao(selecionado,"semana");
+  const semanaBase=escolherVariacao(selecionado,"semana");
+  const semanaContexto=personalizarContexto(contexto,"selecionado","semana");
+  const semana=semanaContexto || semanaBase;
   const contexto=document.getElementById("context").value.trim();
   const extra=contexto?'<p class="quote"><strong>Madame recebeu seu contexto:</strong> "'+escapeHtml(contexto)+'"<br><br>Agora presta atenção porque eu vou considerar isso na leitura. Não adianta fingir que não contou.</p>':"";
   result.innerHTML=
