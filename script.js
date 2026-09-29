@@ -219,11 +219,11 @@ document.getElementById("generateBtn").onclick=()=>{
     return;
   }
   const s=signos[selecionado];
+  const contexto=document.getElementById("context").value.trim();
   const verdade=escolherVariacao(selecionado,"verdade");
   const semanaBase=escolherVariacao(selecionado,"semana");
-  const semanaContexto=personalizarContexto(contexto,"selecionado","semana");
+  const semanaContexto=personalizarContexto(contexto,selecionado,"semana");
   const semana=semanaContexto || semanaBase;
-  const contexto=document.getElementById("context").value.trim();
   const extra=contexto?'<p class="quote"><strong>Madame recebeu seu contexto:</strong> "'+escapeHtml(contexto)+'"<br><br>Agora presta atenção porque eu vou considerar isso na leitura. Não adianta fingir que não contou.</p>':"";
   result.innerHTML=
     '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque alguém precisava te contar a verdade."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
