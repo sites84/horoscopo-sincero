@@ -239,6 +239,73 @@ function escolherVariacao(signo, campo){
   return lista && lista.length ? lista[Math.floor(Math.random()*lista.length)] : signos[signo][campo];
 }
 
+async function compartilharResultado(){
+  if(!selecionado) return;
+  const s=signos[selecionado];
+  const frase=document.querySelector(".share-phrase .quote")?.innerText || "";
+  const verdade=document.querySelector(".result h3 + p")?.innerText || "";
+  const canvas=document.createElement("canvas");
+  canvas.width=1080;
+  canvas.height=1920;
+  const ctx=canvas.getContext("2d");
+  const grad=ctx.createLinearGradient(0,0,1080,1920);
+  grad.addColorStop(0,"#261333");
+  grad.addColorStop(1,"#100817");
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,1080,1920);
+  ctx.fillStyle="#f5c96a";
+  ctx.font="bold 42px sans-serif";
+  ctx.textAlign="center";
+  ctx.fillText("🔮 HORÓSCOPO SINCERO",540,115);
+  ctx.fillStyle="#ffe6a3";
+  ctx.font="bold 62px sans-serif";
+  ctx.fillText(s.nome+" "+s.simbolo,540,205);
+  ctx.fillStyle="#fff8ff";
+  ctx.font="bold 36px sans-serif";
+  ctx.fillText("MADAME VERÔNICA TE EXPÕE",540,275);
+  function wrap(text,y,size,maxWidth){
+    ctx.font=size+"px sans-serif";
+    ctx.textAlign="left";
+    const words=text.split(" ");
+    let line="", lines=[];
+    words.forEach(word=>{
+      const test=line?line+" "+word:word;
+      if(ctx.measureText(test).width>maxWidth && line){lines.push(line);line=word;}else line=test;
+    });
+    if(line) lines.push(line);
+    lines.slice(0,8).forEach((l,i)=>ctx.fillText(l,80,y+i*(size+15)));
+    return y+Math.min(lines.length,8)*(size+15);
+  }
+  ctx.fillStyle="#f7eef9";
+  let y=390;
+  y=wrap("A VERDADE QUE NINGUÉM TE CONTA: "+verdade,y,30,920)+55;
+  ctx.fillStyle="#f5c96a";
+  ctx.font="bold 34px sans-serif";
+  ctx.fillText("📲 FRASE PARA COMPARTILHAR",80,y);
+  y+=65;
+  ctx.fillStyle="#fff8ff";
+  y=wrap(frase,y,38,920);
+  ctx.fillStyle="#cbbbd0";
+  ctx.font="28px sans-serif";
+  ctx.textAlign="center";
+  ctx.fillText("horoscoposincero",540,1830);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/png"));
+  if(!blob) return;
+  const file=new File([blob],"horoscopo-sincero.png",{type:"image/png"});
+  if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+    await navigator.share({title:"Horóscopo Sincero",text:"Madame Verônica me expôs:",files:[file]});
+  }else if(navigator.share){
+    await navigator.share({title:"Horóscopo Sincero",text:frase+" — "+s.nome});
+  }else{
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="horoscopo-sincero.png";
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+}
+
 const ordem=["aries","touro","gemeos","cancer","leao","virgem","libra","escorpiao","sagitario","capricornio","aquario","peixes"];
 let selecionado=null;
 const grid=document.getElementById("zodiacGrid");
@@ -275,10 +342,11 @@ document.getElementById("generateBtn").onclick=()=>{
     '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+semana+'</p>'+extra+
     '<div class="share-phrase"><h3>📲 FRASE PARA COMPARTILHAR:</h3><p class="quote">'+fraseCompartilhavel+'</p></div>'+
     '<h3>💬 CONSELHO QUE VOCÊ VAI IGNORAR (Mas eu vou dar mesmo assim):</h3><p>'+s.conselho+'</p>'+
-    '<button class="generate" id="exposeBtn" type="button">💀 ME EXPÕE MAIS</button><div id="extraExposure"></div><h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
+    '<button class="generate" id="exposeBtn" type="button">💀 ME EXPÕE MAIS</button><button class="share-btn" id="shareBtn" type="button">📲 COMPARTILHAR HORÓSCOPO</button><div id="extraExposure"></div><h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
     '';
   result.classList.remove("hidden");
   document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Já que você pediu:</strong> '+exposicaoInicial+'</p>';
+  document.getElementById("shareBtn").onclick=compartilharResultado;
   document.getElementById("exposeBtn").onclick=()=>{
     document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Outra exposição:</strong> '+escolherExposicao(selecionado)+'</p>';
   };
