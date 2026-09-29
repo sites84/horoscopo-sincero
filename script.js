@@ -36,15 +36,14 @@ document.getElementById("generateBtn").onclick=()=>{
   const contexto=document.getElementById("context").value.trim();
   const extra=contexto?'<p class="quote"><strong>Madame recebeu seu contexto:</strong> "'+escapeHtml(contexto)+'"<br><br>Agora presta atenção porque eu vou considerar isso na leitura. Não adianta fingir que não contou.</p>':"";
   result.innerHTML=
-    '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque mentir pra você já não paga meu aluguel."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
+    '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque alguém precisava te contar a verdade."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
     '<h3>💀 A VERDADE QUE NINGUÉM TE CONTA:</h3><p>'+s.verdade+'</p>'+
     '<h3>🔥 SEU SUPERPODER (Sim, você tem um):</h3><p>'+s.super+'</p>'+
     '<h3>🚩 SEU DEFEITO FATAL (Todo mundo já percebeu, menos você):</h3><p>'+s.defeito+'</p>'+
     '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+s.semana+'</p>'+extra+
     '<h3>💬 CONSELHO QUE VOCÊ VAI IGNORAR (Mas eu vou dar mesmo assim):</h3><p>'+s.conselho+'</p>'+
     '<h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
-    '<div class="pix"><strong>☕ MADAME VERÔNICA ACEITA PIX</strong><p>Se esse horóscopo te expôs na frente de todo mundo e você riu mesmo assim, paga meu café de R$ 2,00 pra eu continuar tendo coragem de falar a verdade.<br>Chave Pix: <strong>[SUA CHAVE PIX AQUI]</strong></p></div>'+
-    '<div class="cta"><strong>🔮 QUER MAIS?</strong><p>Meu "Mapa Astral Sincero Completo" analisa TODAS as suas casas astrológicas sem filtro nenhum. Baixe o template com 50 prompts de autoconhecimento por R$ 9,90: <strong>[SEU LINK DA KIWIFY/GUMROAD AQUI]</strong></p></div>';
+    '';
   result.classList.remove("hidden");
   result.scrollIntoView({behavior:"smooth",block:"start"});
 };
