@@ -69,6 +69,8 @@ textarea:focus{border-color:var(--gold)}
   color:#fff;font-weight:800;font-size:15px;cursor:pointer;letter-spacing:.5px;box-shadow:0 9px 25px rgba(155,93,229,.25)
 }
 .primary-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.share-btn{width:100%;margin-top:10px;border:1px solid var(--gold);border-radius:14px;padding:14px;background:rgba(245,201,106,.08);color:var(--gold2);font-weight:800;font-size:15px;cursor:pointer;letter-spacing:.4px}
+.share-btn:hover{background:rgba(245,201,106,.15);transform:translateY(-1px)}
 .result{margin-top:20px;padding:27px 23px}
 .result.hidden{display:none}
 .result h3{font-family:Cinzel,serif;color:var(--gold2);font-size:17px;margin:25px 0 10px}
