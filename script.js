@@ -180,6 +180,26 @@ function escolherFraseCompartilhavel(signo){
   return lista.length ? lista[Math.floor(Math.random()*lista.length)] : "";
 }
 
+const exposicoes = {
+  aries:["Você já respondeu 'calma' para alguém enquanto estava claramente sendo a pessoa menos calma da sala.","Você chama de coragem o que às vezes é simplesmente não ter pensado no problema ainda.","Você não precisa ganhar toda discussão, mas seu histórico sugere que vai tentar."],
+  touro:["Você reclama que ninguém respeita seu tempo, mas também demora uma vida para decidir qualquer mudança.","Você guarda objetos porque 'um dia pode precisar'. Esse dia está esperando há cinco anos.","Você chama de rotina aquilo que já virou resistência oficial a qualquer novidade."],
+  gemeos:["Você provavelmente abriu o celular para fazer uma coisa e terminou fazendo cinco completamente diferentes.","Você responde uma conversa mentalmente e depois fica surpreso quando a pessoa cobra resposta.","Você consegue transformar uma informação pequena em uma investigação que ninguém solicitou."],
+  cancer:["Você diz que não vai procurar a pessoa e cinco minutos depois já sabe até o signo dela.","Você consegue sentir falta de uma fase da vida que, na época, também reclamava que queria acabar.","Você guarda uma conversa antiga porque 'vai que'. O 'vai que' já está pagando aluguel aí."],
+  leao:["Você diz que não quer elogio e depois conta a história inteira quando alguém elogia você.","Você percebe imediatamente quando alguém não deu atenção. Imediatamente mesmo.","Seu 'não ligo' às vezes precisa de mais comprovação do que seu 'eu ligo'."],
+  virgem:["Você corrige mentalmente pessoas que nem pediram correção.","Você demora mais escolhendo a maneira certa de fazer algo do que levaria para simplesmente fazer.","Você diz que está tranquilo enquanto reorganiza mentalmente a rotina de todo mundo."],
+  libra:["Você já disse 'tanto faz' esperando que a pessoa lesse sua mente.","Você pede opinião para decidir e depois fica incomodado quando a opinião é diferente da sua.","Você consegue transformar escolher um restaurante em uma reunião extraordinária."],
+  escorpiao:["Você diz que esqueceu, mas sua memória tem backup, nuvem e cópia de segurança.","Você percebe uma mudança mínima no comportamento e imediatamente abre uma investigação interna.","Você não precisa de provas para desconfiar. Sua cabeça já abriu o processo."],
+  sagitario:["Você aceita convite sem saber horário, endereço ou como vai voltar.","Você chama de espontaneidade aquilo que às vezes é falta de planejamento.","Você já falou 'depois eu resolvo' com uma confiança que o boleto não compartilha."],
+  capricornio:["Você diz que está tudo sob controle enquanto adiciona mais três responsabilidades na agenda.","Você transforma até um dia de folga em oportunidade de colocar tarefas em dia.","Você ajuda porque sabe fazer e depois fica indignado porque todo mundo passou a contar com você."],
+  aquario:["Você some para pensar e volta esperando que ninguém tenha feito perguntas durante o processo.","Você odeia rotina, mas tem hábitos tão específicos que qualquer mudança parece uma afronta pessoal.","Você quer liberdade absoluta e comunicação mínima. Aí fica difícil alguém saber o que você quer."],
+  peixes:["Você interpreta coincidência como roteiro e depois se surpreende quando a vida não segue o script.","Você sente a energia de uma situação e às vezes inventa o resto.","Você pode passar uma tarde inteira imaginando uma conversa que nunca vai acontecer."]
+};
+
+function escolherExposicao(signo){
+  const lista=exposicoes[signo] || [];
+  return lista.length ? lista[Math.floor(Math.random()*lista.length)] : "";
+}
+
 function personalizarContexto(contexto, signo, campo){
   if(!contexto) return "";
   const texto=contexto.toLowerCase();
@@ -245,6 +265,7 @@ document.getElementById("generateBtn").onclick=()=>{
   const semanaContexto=personalizarContexto(contexto,selecionado,"semana");
   const semana=semanaContexto || semanaBase;
   const fraseCompartilhavel=escolherFraseCompartilhavel(selecionado);
+  const exposicaoInicial=escolherExposicao(selecionado);
   const extra=contexto?'<p class="quote"><strong>Madame recebeu seu contexto:</strong> "'+escapeHtml(contexto)+'"<br><br>Agora presta atenção porque eu vou considerar isso na leitura. Não adianta fingir que não contou.</p>':"";
   result.innerHTML=
     '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque alguém precisava te contar a verdade."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
@@ -254,9 +275,13 @@ document.getElementById("generateBtn").onclick=()=>{
     '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+semana+'</p>'+extra+
     '<div class="share-phrase"><h3>📲 FRASE PARA COMPARTILHAR:</h3><p class="quote">'+fraseCompartilhavel+'</p></div>'+
     '<h3>💬 CONSELHO QUE VOCÊ VAI IGNORAR (Mas eu vou dar mesmo assim):</h3><p>'+s.conselho+'</p>'+
-    '<h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
+    '<button class="generate" id="exposeBtn" type="button">💀 ME EXPÕE MAIS</button><div id="extraExposure"></div><h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
     '';
   result.classList.remove("hidden");
+  document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Já que você pediu:</strong> '+exposicaoInicial+'</p>';
+  document.getElementById("exposeBtn").onclick=()=>{
+    document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Outra exposição:</strong> '+escolherExposicao(selecionado)+'</p>';
+  };
   result.scrollIntoView({behavior:"smooth",block:"start"});
 };
 
