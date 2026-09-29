@@ -160,6 +160,26 @@ const variacoes = {
   }
 };
 
+const frasesCompartilhaveis = {
+  aries:["Eu não sou impulsivo. Eu só tenho pressa de descobrir se vai dar merda.","Se eu pensei, eu falei. Se eu falei, agora já foi.","Minha paciência não acabou. Ela só pediu demissão."],
+  touro:["Eu não sou teimoso. Eu só demoro para concordar com quem está errado.","Meu conceito de aventura é mudar o pedido no restaurante.","Conforto não é preguiça. É planejamento emocional."],
+  gemeos:["Eu não mudo de assunto. Minha mente só trabalha em várias abas.","Eu ia explicar, mas me distraí no meio da frase.","Tenho opinião sobre tudo. Inclusive sobre o que acabei de descobrir."],
+  cancer:["Eu não guardo rancor. Eu guardo detalhes.","Superei. Só não apaguei o arquivo.","Não é saudade. É uma investigação emocional sem autorização."],
+  leao:["Eu não preciso de atenção. Mas, se vier, eu aceito.","Não é ego. É manutenção da autoestima.","Eu finjo que não ligo com uma qualidade impressionante."],
+  virgem:["Eu não sou controlador. Eu só percebi que ninguém fez direito.","Relaxa. Eu já organizei até o que você não pediu.","Não é preocupação. É planejamento com excesso de imaginação."],
+  libra:["Eu sei o que quero. Só preciso analisar mais 47 opções.","'Tanto faz' significa 'escolhe exatamente o que eu estou pensando'.","Não estou indeciso. Estou dando uma chance para todas as possibilidades."],
+  escorpiao:["Eu não investigo. Eu apenas observo com profundidade.","Esquecer eu até esqueço. O detalhe é que eu lembro de tudo.","Não desconfio de todo mundo. Só dos motivos."],
+  sagitario:["Eu disse 'bora' antes de perguntar para onde.","Planejamento é descobrir os detalhes depois de aceitar.","Eu não fujo de responsabilidade. Só gosto de manter distância."],
+  capricornio:["Eu descanso, sim. Minha culpa é que descanso pensando no que falta fazer.","Não estou trabalhando demais. Estou evitando pensar na vida.","Minha meta de hoje era descansar. Acabei criando outra meta."],
+  aquario:["Eu explicaria, mas provavelmente você não acompanharia a linha de raciocínio.","Não é rebeldia. Eu só fiquei com vontade de fazer o contrário.","Eu tenho sentimentos. Só preciso de um tutorial para explicar."],
+  peixes:["Eu não criei expectativa. Só imaginei 14 futuros possíveis.","A pessoa mandou 'kkk' e minha cabeça escreveu uma temporada inteira.","Eu sinto tanto que às vezes até problema dos outros vem com meu nome."]
+};
+
+function escolherFraseCompartilhavel(signo){
+  const lista=frasesCompartilhaveis[signo] || [];
+  return lista.length ? lista[Math.floor(Math.random()*lista.length)] : "";
+}
+
 function personalizarContexto(contexto, signo, campo){
   if(!contexto) return "";
   const texto=contexto.toLowerCase();
@@ -224,6 +244,7 @@ document.getElementById("generateBtn").onclick=()=>{
   const semanaBase=escolherVariacao(selecionado,"semana");
   const semanaContexto=personalizarContexto(contexto,selecionado,"semana");
   const semana=semanaContexto || semanaBase;
+  const fraseCompartilhavel=escolherFraseCompartilhavel(selecionado);
   const extra=contexto?'<p class="quote"><strong>Madame recebeu seu contexto:</strong> "'+escapeHtml(contexto)+'"<br><br>Agora presta atenção porque eu vou considerar isso na leitura. Não adianta fingir que não contou.</p>':"";
   result.innerHTML=
     '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque alguém precisava te contar a verdade."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
@@ -231,6 +252,7 @@ document.getElementById("generateBtn").onclick=()=>{
     '<h3>🔥 SEU SUPERPODER (Sim, você tem um):</h3><p>'+s.super+'</p>'+
     '<h3>🚩 SEU DEFEITO FATAL (Todo mundo já percebeu, menos você):</h3><p>'+s.defeito+'</p>'+
     '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+semana+'</p>'+extra+
+    '<div class="share-phrase"><h3>📲 FRASE PARA COMPARTILHAR:</h3><p class="quote">'+fraseCompartilhavel+'</p></div>'+
     '<h3>💬 CONSELHO QUE VOCÊ VAI IGNORAR (Mas eu vou dar mesmo assim):</h3><p>'+s.conselho+'</p>'+
     '<h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
     '';
