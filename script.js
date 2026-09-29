@@ -13,6 +13,158 @@ const signos = {
   peixes:{nome:"PEIXES",simbolo:"♓",elemento:"Água",super:"Você tem uma imaginação que transforma qualquer situação em história e percebe nuances que muita gente ignora.",defeito:"Você romantiza sinais mínimos. A pessoa mandou 'kkk' e você já está avaliando o potencial narrativo da relação.",verdade:"Você diz que está seguindo em frente enquanto ouve a música que lembra a pessoa e olha para o teto pensando na vida. Tem empatia até demais e, às vezes, sofre por problemas que nem são seus.",semana:"Uma lembrança vai bater forte e você vai dar significado demais para uma coincidência. Alguém vai desabafar com você e, quando perceber, estará carregando o problema da pessoa no colo. No fim de semana, faça alguma coisa concreta antes de passar três horas imaginando cenários.",combina:["CÂNCER","porque alguém precisa chorar junto com você de madrugada e ainda entender exatamente por que a música era importante."],foge:["AQUÁRIO","porque você quer conversar sobre sentimentos e Aquário pode começar uma palestra sobre lógica."],conselho:"Sentir muito não significa precisar agir sobre tudo o que sente. Respira e deixa algumas emoções passarem."}
 };
 
+const variacoes = {
+  aries:{
+    verdade:[
+      "Você tem a delicadeza de um caminhão sem freio quando decide falar o que pensa. Depois percebe que exagerou, dá risada e segue a vida como se ninguém tivesse acabado de receber um discurso de quinze minutos.",
+      "Sua paciência dura menos que bateria de celular velho. Você quer tudo para ontem, começa no entusiasmo e só lembra das consequências quando elas já estão sentadas na sua frente.",
+      "Você não procura confusão, mas também não exatamente foge dela. Basta alguém contrariar sua ideia e pronto: nasceu uma reunião que ninguém marcou."
+    ],
+    semana:[
+      "Uma coisa pequena vai irritar você mais do que deveria e sua primeira vontade será responder na hora. Não responda. Na quinta, uma ideia nova vai ocupar sua cabeça e você vai querer começar imediatamente. Pelo menos termine a anterior primeiro.",
+      "Você vai dizer 'deixa comigo' e descobrir depois que assumiu mais uma tarefa. No meio da semana, alguém vai testar sua paciência. No fim de semana, você vai querer fazer alguma coisa diferente só porque ficou entediado.",
+      "Uma oportunidade de fazer algo impulsivo aparece e você vai precisar escolher entre pensar ou agir. Seu histórico não favorece a primeira opção. No domingo, vai olhar para a semana e se perguntar por que aceitou tanta coisa."
+    ]
+  },
+  touro:{
+    verdade:[
+      "Você chama de estabilidade o que às vezes é simplesmente medo de mexer no que já está confortável. E se tiver comida boa envolvida, sua capacidade de negociação misteriosamente aumenta.",
+      "Você pode passar meses dizendo que não liga para determinada pessoa, lugar ou situação, mas basta alguém tocar no assunto para você lembrar de absolutamente todos os detalhes.",
+      "Mudar seus hábitos é uma novela em 200 capítulos. Você sabe o que deveria fazer, concorda com quem fala e mesmo assim continua fazendo do seu jeito."
+    ],
+    semana:[
+      "Uma mudança vai aparecer e sua primeira reação será pensar em dez motivos para deixar para depois. No fim, você vai fazer — mas somente quando estiver convencido de que ninguém vai atrapalhar seu conforto.",
+      "Você vai economizar numa coisa e gastar o dobro em outra que considera indispensável. Na sexta, alguém vai tentar acelerar uma decisão sua e você vai andar ainda mais devagar.",
+      "Uma pessoa vai insistir para você experimentar algo novo. Você vai reclamar, avaliar, desconfiar e provavelmente gostar depois. Só não espere que você admita isso imediatamente."
+    ]
+  },
+  gemeos:{
+    verdade:[
+      "Você começa uma história, lembra de outra, abre uma conversa no celular e, quando percebe, ninguém sabe mais qual era o assunto original — inclusive você.",
+      "Você tem opinião para tudo, inclusive para assuntos que descobriu há aproximadamente oito minutos. E quando aparece uma informação nova, sua opinião muda com a mesma tranquilidade.",
+      "Sua mente parece um grupo de WhatsApp com 37 pessoas falando ao mesmo tempo. O problema é que todas as pessoas são você."
+    ],
+    semana:[
+      "Uma conversa inocente vai virar fofoca e a fofoca vai virar investigação. Na quarta você terá começado várias coisas e terminado poucas. Pelo menos uma delas vai render uma história boa.",
+      "Você vai receber uma mensagem enquanto está respondendo outra pessoa e esquecer completamente a primeira. No sábado, uma conversa antiga pode voltar e você vai agir como se tivesse sido ontem.",
+      "Uma ideia nova vai interromper a tarefa que você estava fazendo. Você vai prometer que volta depois. Spoiler: provavelmente não volta."
+    ]
+  },
+  cancer:{
+    verdade:[
+      "Você não guarda lembranças; você monta acervo. Uma mensagem antiga, uma foto e até uma música podem ficar arquivadas por anos esperando o momento certo para destruir sua paz por vinte minutos.",
+      "Você diz que superou, mas ainda sabe exatamente onde encontrou aquela pessoa pela primeira vez. Não é memória, amiga. É HD externo emocional.",
+      "Seu coração tem gavetas para pessoas que nem sabem que ainda estão cadastradas. E quando bate saudade, você chama de curiosidade e vai olhar o perfil."
+    ],
+    semana:[
+      "Uma lembrança antiga vai aparecer sem convite e você vai passar tempo demais pensando nela. Na sexta, alguém vai procurar você para conversar e você vai virar terapeuta improvisado.",
+      "Você vai perceber uma mudança no comportamento de alguém e provavelmente estará certo. O problema é que vai pensar nisso durante horas antes de perguntar diretamente.",
+      "O melhor momento da semana pode ser justamente quando você decidir ficar quieto, comer alguma coisa boa e não resolver problema de ninguém."
+    ]
+  },
+  leao:{
+    verdade:[
+      "Você não precisa ser o centro das atenções, mas também não acha ruim quando acontece. E quando alguém recebe um elogio que você queria, você percebe imediatamente — mesmo fingindo que não.",
+      "Você diz que não liga para aprovação enquanto verifica quem viu sua postagem. Isso não é desinteresse; é auditoria.",
+      "Seu orgulho é tão bem organizado que até quando você quer pedir desculpas começa procurando uma maneira de não parecer que pediu desculpas."
+    ],
+    semana:[
+      "Alguém vai reconhecer algo que você fez e você vai fingir naturalidade enquanto guarda o elogio no coração. Uma crítica pequena também pode pegar mais fundo do que deveria.",
+      "Você vai sentir vontade de mudar alguma coisa no visual, na rotina ou no ambiente. Faça se quiser, mas não precisa transformar a mudança em anúncio oficial.",
+      "Uma pessoa vai disputar sua atenção e você vai perceber imediatamente. O desafio será não transformar isso numa competição que só existe na sua cabeça."
+    ]
+  },
+  virgem:{
+    verdade:[
+      "Você encontra erro até onde ninguém pediu revisão. O problema é que depois fica difícil fingir que não viu.",
+      "Você chama de organização, mas às vezes é ansiedade usando roupa social. Tem plano A, B e C e ainda quer saber o que fazer se o plano C der errado.",
+      "Você ajuda todo mundo e depois fica irritado porque ninguém fez exatamente do jeito que você teria feito. A surpresa é zero."
+    ],
+    semana:[
+      "Você vai notar um detalhe que todo mundo ignorou e vai precisar decidir se vale a pena falar. Nem sempre vale.",
+      "Uma tarefa simples vai virar um projeto porque você decidiu melhorar o processo. No fim, vai funcionar, mas poderia ter terminado em vinte minutos.",
+      "Alguém vai pedir sua opinião e você vai entregar uma análise que ninguém solicitou, mas que provavelmente precisava."
+    ]
+  },
+  libra:{
+    verdade:[
+      "Você diz 'qualquer coisa está bom' com a esperança secreta de que alguém escolha exatamente a opção que você queria.",
+      "Você evita conflito até o ponto em que começa a acumular pequenas irritações. Depois chama de 'nada demais' e continua sorrindo.",
+      "Sua indecisão não é falta de opinião. Você tem opinião demais e quer escolher a opção que vai deixar todo mundo satisfeito — missão impossível, amiga."
+    ],
+    semana:[
+      "Uma escolha simples vai ocupar espaço demais na sua cabeça. Você vai pedir opinião, ouvir duas respostas diferentes e ficar ainda mais indeciso.",
+      "Alguém vai colocar você diante de uma decisão e você vai tentar negociar até o universo desistir. Escolha logo.",
+      "Uma situação social vai exigir que você diga não. Vai dar vontade de inventar desculpa. Não invente uma novela; seja direto."
+    ]
+  },
+  escorpiao:{
+    verdade:[
+      "Você diz que não está investigando, mas já sabe quem curtiu, quem deixou de seguir e quem apareceu no story. Isso não é curiosidade, é perícia.",
+      "Sua memória emocional trabalha em alta definição. Você pode esquecer onde colocou a chave, mas lembra exatamente da frase que alguém falou há quatro anos.",
+      "Você confia devagar e desconfia rápido. Quando alguma coisa parece estranha, sua cabeça já começou a montar a temporada inteira da série."
+    ],
+    semana:[
+      "Uma mensagem curta vai parecer carregada de significado e você vai analisar mais do que deveria. Perguntar diretamente continua sendo mais barato que criar uma teoria.",
+      "Alguém vai fazer algo inesperado e você vai imediatamente procurar a segunda intenção. Talvez exista. Talvez você só esteja trabalhando demais.",
+      "Uma conversa pode esclarecer uma dúvida antiga. Não transforme a oportunidade em interrogatório policial."
+    ]
+  },
+  sagitario:{
+    verdade:[
+      "Você aceita o convite primeiro e pergunta onde é depois. Planejamento para você às vezes significa descobrir o caminho enquanto já está saindo de casa.",
+      "Sua sinceridade é ótima até chegar naquele momento em que você percebe que falou exatamente o que não precisava.",
+      "Você ama liberdade e às vezes usa essa palavra para fugir de coisas simples como responder mensagem, marcar horário e pagar boleto."
+    ],
+    semana:[
+      "Um convite inesperado pode virar o melhor acontecimento da semana — desde que você descubra os detalhes antes de dizer sim.",
+      "Você vai ter vontade de mudar a rotina e provavelmente vai inventar um plano em cima da hora. Só não esqueça das responsabilidades que ficaram para trás.",
+      "Uma conversa vai abrir uma possibilidade interessante. Antes de prometer qualquer coisa, confira se você realmente tem tempo."
+    ]
+  },
+  capricornio:{
+    verdade:[
+      "Você consegue transformar descanso em culpa. Está sentado sem fazer nada e seu cérebro já abriu uma reunião sobre produtividade.",
+      "Você diz que quer paz, mas cria metas como quem coleciona figurinha. Quando termina uma, já inventou outra.",
+      "Pedir ajuda parece mais difícil para você do que fazer tudo sozinho e reclamar depois que ninguém ajuda."
+    ],
+    semana:[
+      "Uma pendência vai incomodar você até ser resolvida. Tente não assumir também a pendência dos outros só porque sabe fazer melhor.",
+      "Você vai ter uma oportunidade de descansar e provavelmente vai usar parte do tempo para organizar alguma coisa. Pelo menos tente sentar sem transformar o descanso em tarefa.",
+      "Uma cobrança vai fazer você perceber que está carregando mais do que deveria. Delegar não vai destruir sua reputação."
+    ]
+  },
+  aquario:{
+    verdade:[
+      "Você quer que entendam sua cabeça, mas explica pouco e depois fica surpreso quando ninguém entendeu.",
+      "Quando alguém tenta controlar você, sua vontade imediata é fazer exatamente o contrário, mesmo que a ideia original nem fosse ruim.",
+      "Você consegue passar de uma conversa emocional para uma teoria sobre o futuro da humanidade sem perceber que deixou a outra pessoa esperando uma resposta."
+    ],
+    semana:[
+      "Uma ideia diferente vai surgir e você vai querer testar na hora. Só confira se não está abandonando outra ideia que teve ontem.",
+      "Alguém vai pedir mais clareza sobre o que você sente. Não transforme a resposta em palestra; diga simplesmente o que está acontecendo.",
+      "Uma mudança de rotina pode fazer bem, mas avise as pessoas envolvidas antes de desaparecer para reorganizar sua vida."
+    ]
+  },
+  peixes:{
+    verdade:[
+      "Você consegue criar uma história inteira a partir de uma mensagem de três palavras. Às vezes a pessoa só escreveu 'kkkk'.",
+      "Sua imaginação é ótima até começar a preencher lacunas com coisas que ninguém disse.",
+      "Você sente o problema dos outros como se tivesse recebido a conta no seu nome. Depois fica cansado sem entender por quê."
+    ],
+    semana:[
+      "Uma coincidência vai parecer carregada de significado. Antes de transformar isso em sinal do universo, confira se não foi apenas uma coincidência.",
+      "Alguém vai desabafar e você vai querer resolver tudo. Escutar já pode ser suficiente.",
+      "Uma atividade prática vai fazer bem justamente porque tira você da cabeça e coloca sua atenção no que está acontecendo de verdade."
+    ]
+  }
+};
+
+function escolherVariacao(signo, campo){
+  const lista=variacoes[signo] && variacoes[signo][campo];
+  return lista && lista.length ? lista[Math.floor(Math.random()*lista.length)] : signos[signo][campo];
+}
+
 const ordem=["aries","touro","gemeos","cancer","leao","virgem","libra","escorpiao","sagitario","capricornio","aquario","peixes"];
 let selecionado=null;
 const grid=document.getElementById("zodiacGrid");
@@ -33,14 +185,16 @@ document.getElementById("generateBtn").onclick=()=>{
     return;
   }
   const s=signos[selecionado];
+  const verdade=escolherVariacao(selecionado,"verdade");
+  const semana=escolherVariacao(selecionado,"semana");
   const contexto=document.getElementById("context").value.trim();
   const extra=contexto?'<p class="quote"><strong>Madame recebeu seu contexto:</strong> "'+escapeHtml(contexto)+'"<br><br>Agora presta atenção porque eu vou considerar isso na leitura. Não adianta fingir que não contou.</p>':"";
   result.innerHTML=
     '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque alguém precisava te contar a verdade."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
-    '<h3>💀 A VERDADE QUE NINGUÉM TE CONTA:</h3><p>'+s.verdade+'</p>'+
+    '<h3>💀 A VERDADE QUE NINGUÉM TE CONTA:</h3><p>'+verdade+'</p>'+
     '<h3>🔥 SEU SUPERPODER (Sim, você tem um):</h3><p>'+s.super+'</p>'+
     '<h3>🚩 SEU DEFEITO FATAL (Todo mundo já percebeu, menos você):</h3><p>'+s.defeito+'</p>'+
-    '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+s.semana+'</p>'+extra+
+    '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+semana+'</p>'+extra+
     '<h3>💬 CONSELHO QUE VOCÊ VAI IGNORAR (Mas eu vou dar mesmo assim):</h3><p>'+s.conselho+'</p>'+
     '<h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
     '';
