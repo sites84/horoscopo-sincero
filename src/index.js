@@ -2,98 +2,93 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
-  "Content-Type": "application/json; charset=UTF-8"
+  "Content-Type": "application/json; charset=UTF-8",
+  "Cache-Control": "no-store"
 };
 
 function extrairTexto(answer) {
   if (typeof answer === "string") return answer;
   if (!answer || typeof answer !== "object") return "";
-
   const candidatos = [
-    answer.response,
-    answer.output_text,
-    answer.content,
-    answer.result?.response,
-    answer.result?.output_text,
-    answer.result?.content,
-    answer.result?.choices?.[0]?.message?.content,
-    answer.result?.choices?.[0]?.text,
-    answer.choices?.[0]?.message?.content,
-    answer.choices?.[0]?.text
+    answer.response, answer.output_text, answer.content,
+    answer.result?.response, answer.result?.output_text, answer.result?.content,
+    answer.result?.choices?.[0]?.message?.content, answer.result?.choices?.[0]?.text,
+    answer.choices?.[0]?.message?.content, answer.choices?.[0]?.text
   ];
-
-  for (const valor of candidatos) {
-    if (typeof valor === "string" && valor.trim()) return valor;
-  }
-
+  for (const valor of candidatos) if (typeof valor === "string" && valor.trim()) return valor;
   return "";
 }
 
-async function gerarHoroscopo(request, env) {
-  if (request.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders });
-  }
+function respostaErro(status, error, detail = "") {
+  return new Response(JSON.stringify({ error, detail }), { status, headers: corsHeaders });
+}
 
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Método não permitido." }), {
-      status: 405,
-      headers: corsHeaders
-    });
-  }
+async function gerarHoroscopo(request, env) {
+  if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: corsHeaders });
+  if (request.method !== "POST") return respostaErro(405, "Método não permitido.");
 
   try {
     const body = await request.json();
     const signo = String(body.signo || "").trim();
     const elemento = String(body.elemento || "").trim();
     const contexto = String(body.contexto || "").trim().slice(0, 280);
+    const perfil = body.perfil && typeof body.perfil === "object" ? body.perfil : {};
 
-    if (!signo || !elemento) {
-      return new Response(JSON.stringify({ error: "Signo e elemento são obrigatórios." }), {
-        status: 400,
-        headers: corsHeaders
-      });
-    }
+    if (!signo || !elemento) return respostaErro(400, "Signo e elemento são obrigatórios.");
 
-    const system = `Você é Madame Verônica, astróloga brasileira com 30 anos de experiência, direta, sarcástica, íntima e engraçada. Fale em português brasileiro, usando gírias naturais. Nunca seja cruel: o humor deve atingir comportamentos e hábitos, não aparência, saúde mental ou traumas. A resposta deve ser original e específica, nunca uma frase pronta de horóscopo de revista.`;
+    const system = `Você é Madame Verônica, personagem de um site brasileiro de horóscopo humorístico.
+Escreva em português brasileiro natural, com sarcasmo leve, intimidade e humor de observação.
+Nunca ataque aparência, saúde, transtornos, traumas ou características protegidas.
 
-    const user = `Crie AGORA uma leitura ORIGINAL para o signo ${signo}, elemento ${elemento}.
-${contexto ? `Contexto pessoal informado pelo usuário: ${contexto}` : "Não há contexto pessoal informado."}
+IDENTIDADE OBRIGATÓRIA: o signo é EXATAMENTE ${signo} e o elemento é EXATAMENTE ${elemento}.
+NUNCA troque o signo, mesmo que qualquer outro texto diga algo diferente. Tudo deve ser coerente com ${signo}.
 
-A resposta precisa ser NOVA para esta solicitação e não pode parecer uma lista de frases prontas.
+Não escreva horóscopo genérico. Faça uma leitura específica para ${signo}, baseada em comportamentos cotidianos, hábitos, decisões, conversas, mensagens, trabalho, dinheiro e relações.
+O perfil abaixo é somente uma âncora de personalidade. Use as ideias como referência, mas REESCREVA tudo e nunca copie as frases.
+Perfil: ${JSON.stringify(perfil)}
 
-Retorne SOMENTE um objeto JSON válido, sem markdown, sem explicações e sem texto antes ou depois, exatamente com estas propriedades:
-{"verdade":"2 ou 3 frases expondo um comportamento reconhecível do signo.","diario":"uma previsão divertida e específica para hoje.","semana":"3 ou 4 frases formando uma previsão comportamental específica da semana.","frase":"uma frase curta, extremamente compartilhável e engraçada.","exposicao":"uma nova exposição curta, diferente da verdade.","conselho":"uma frase útil que ataque exatamente o ponto fraco do signo."}`;
+Cada sessão tem uma função diferente:
+1. verdade = hábito reconhecível e engraçado de ${signo}.
+2. superpoder = qualidade realista de ${signo}, transformada em humor; NÃO é poder sobrenatural.
+3. defeito = comportamento que atrapalha ${signo}; diferente da verdade.
+4. semana = previsão comportamental para os próximos dias, com situações concretas; não repetir a verdade.
+5. diario = previsão curta e específica para hoje; não repetir a semana.
+6. frase = uma única frase curta, memorável e muito compartilhável.
+7. exposicao = segunda exposição curta, diferente de verdade e defeito.
+8. conselho = conselho curto e prático relacionado ao defeito.
 
-    let answer;
-    let modeloUsado = "@cf/zai-org/glm-4.7-flash";
+Não use títulos dentro dos campos. Não use emojis nos campos. Não explique as regras. Não diga que astrologia é ciência. Gere conteúdo novo a cada solicitação.`;
 
-    try {
-      answer = await env.AI.run(modeloUsado, {
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user }
-        ],
-        chat_template_kwargs: {
-          enable_thinking: false
-        },
-        max_completion_tokens: 1200,
-        temperature: 0.9
-      });
-    } catch (aiError) {
-      modeloUsado = "@cf/meta/llama-3.2-3b-instruct";
-      answer = await env.AI.run(modeloUsado, {
-        prompt: `${system}\n\n${user}`,
-        max_tokens: 900,
-        temperature: 0.9
-      });
-    }
+    const user = `Gere AGORA uma leitura nova para ${signo}, elemento ${elemento}.
+${contexto ? `Situação contada pelo visitante: ${contexto}` : "Não há situação pessoal. Não invente uma história específica sobre o visitante."}
+
+Limites para resposta rápida:
+verdade: 2 frases.
+superpoder: 1 ou 2 frases.
+defeito: 2 frases.
+semana: 2 ou 3 frases.
+diario: 1 ou 2 frases.
+frase: no máximo 16 palavras.
+exposicao: 1 ou 2 frases.
+conselho: 1 frase.
+
+Retorne somente JSON válido com exatamente estes campos: verdade, superpoder, defeito, semana, diario, frase, exposicao, conselho.`;
+
+    const modeloUsado = "@cf/meta/llama-3.1-8b-instruct-fp8";
+    const answer = await env.AI.run(modeloUsado, {
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user }
+      ],
+      max_tokens: 520,
+      temperature: 0.82,
+      top_p: 0.9,
+      repetition_penalty: 1.08,
+      response_format: { type: "json_object" }
+    });
 
     const raw = extrairTexto(answer);
-
-    if (!raw) {
-      const recebido = JSON.stringify(answer).slice(0, 1500);
-      throw new Error(`Workers AI respondeu sem texto utilizável. Modelo: ${modeloUsado}. Resposta recebida: ${recebido}`);
-    }
+    if (!raw) throw new Error(`Workers AI respondeu sem texto utilizável. Modelo: ${modeloUsado}.`);
 
     let parsed;
     try {
@@ -101,23 +96,28 @@ Retorne SOMENTE um objeto JSON válido, sem markdown, sem explicações e sem te
     } catch {
       const cleaned = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
       const match = cleaned.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error(`A IA retornou texto, mas não retornou o JSON esperado. Modelo: ${modeloUsado}. Início da resposta: ${cleaned.slice(0, 500)}`);
+      if (!match) throw new Error(`A IA retornou texto fora do JSON esperado.`);
       parsed = JSON.parse(match[0]);
     }
 
+    const campos = ["verdade", "superpoder", "defeito", "semana", "diario", "frase", "exposicao", "conselho"];
+    for (const campo of campos) {
+      if (typeof parsed[campo] !== "string" || !parsed[campo].trim()) throw new Error(`Campo ausente: ${campo}.`);
+    }
+
     return new Response(JSON.stringify({
-      verdade: String(parsed.verdade || ""),
-      diario: String(parsed.diario || ""),
-      semana: String(parsed.semana || ""),
-      frase: String(parsed.frase || ""),
-      exposicao: String(parsed.exposicao || ""),
-      conselho: String(parsed.conselho || "")
+      signo, elemento,
+      verdade: parsed.verdade.trim(),
+      superpoder: parsed.superpoder.trim(),
+      defeito: parsed.defeito.trim(),
+      semana: parsed.semana.trim(),
+      diario: parsed.diario.trim(),
+      frase: parsed.frase.trim(),
+      exposicao: parsed.exposicao.trim(),
+      conselho: parsed.conselho.trim()
     }), { status: 200, headers: corsHeaders });
   } catch (error) {
-    return new Response(JSON.stringify({
-      error: "Não foi possível gerar o horóscopo agora.",
-      detail: String(error.message || error)
-    }), { status: 500, headers: corsHeaders });
+    return respostaErro(500, "Não foi possível gerar o horóscopo agora.", String(error?.message || error));
   }
 }
 
