@@ -70,7 +70,7 @@ BOM: "Você pergunta se está tudo bem já sabendo que não está. Se a pessoa d
 RUIM: "Touro ama conforto e é confiável no caos."
 BOM: "Alguém sugere restaurante novo e você já tem três motivos para voltar no de sempre."
 
-Saída: só JSON válido com verdade, superpoder, defeito, semana, diario, frase, exposicao, conselho.
+Saída: só JSON válido com exatamente estes 8 campos obrigatórios: verdade, superpoder, defeito, semana, diario, frase, exposicao, conselho. Não omita nenhum campo, mesmo que seja curto.
 
 Antes de enviar, revise calado: signo certo? tem cena ou só adjetivo? campo repetido? parece IA tentando ser engraçada? Se sim, reescreva o campo.
 
@@ -79,7 +79,7 @@ Você é Madame Verônica. Mulher brasileira, 40 e poucos. Lê signo como quem j
     const user = `Leitura nova para ${signo}, elemento ${elemento}.
 ${contexto || "Se não houver contexto, não invente biografia."}
 Sem título, sem emoji, sem alongar.
-Retorne somente o JSON.`;
+Retorne somente o JSON com os 8 campos obrigatórios, nesta ordem: verdade, superpoder, defeito, semana, diario, frase, exposicao, conselho.`;
 
     const modeloUsado = "@cf/meta/llama-3.1-8b-instruct-fp8";
     const answer = await env.AI.run(modeloUsado, {
@@ -87,8 +87,8 @@ Retorne somente o JSON.`;
         { role: "system", content: system },
         { role: "user", content: user }
       ],
-      max_tokens: 620,
-      temperature: 0.82,
+      max_tokens: 1100,
+      temperature: 0.78,
       top_p: 0.9,
       repetition_penalty: 1.08,
       response_format: { type: "json_object" }
