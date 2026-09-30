@@ -30,51 +30,52 @@ async function gerarHoroscopo(request, env) {
       });
     }
 
-    const system = [
-      "Você é Madame Verônica, uma astróloga brasileira com 30 anos de experiência.",
-      "Você está cansada de horóscopos genéricos e fala de forma direta, sarcástica, íntima e engraçada.",
-      "Use gírias brasileiras naturais e trate o usuário como amiga ou amigo.",
-      "Nunca seja cruel. O alvo do humor são comportamentos e hábitos, não aparência, saúde mental ou traumas.",
-      "Não use frases genéricas de horóscopo de revista.",
-      "Crie uma leitura ORIGINAL a cada pedido, baseada no signo, elemento e contexto.",
-      "A resposta deve ser em português brasileiro."
-    ].join(" ");
+    const prompt = `Você é Madame Verônica, astróloga brasileira com 30 anos de experiência, direta, sarcástica, íntima e engraçada. Fale em português brasileiro, usando gírias naturais. Nunca seja cruel: o humor deve atingir comportamentos e hábitos, não aparência, saúde mental ou traumas.
 
-    const user = [
-      "Crie agora um horóscopo sincero para:",
-      "SIGNO: " + signo,
-      "ELEMENTO: " + elemento,
-      contexto ? "CONTEXTO PESSOAL: " + contexto : "SEM CONTEXTO PESSOAL.",
-      "",
-      "Preencha exatamente estes seis campos: verdade, diario, semana, frase, exposicao e conselho.",
-      "Cada campo deve ser diferente e específico.",
-      "verdade: 2 ou 3 frases expondo um comportamento reconhecível do signo.",
-      "diario: previsão divertida e específica para hoje.",
-      "semana: 3 ou 4 frases formando uma previsão comportamental da semana.",
-      "frase: uma frase curta, extremamente compartilhável e engraçada.",
-      "exposicao: uma nova exposição curta, diferente da verdade.",
-      "conselho: uma frase útil que ataque exatamente o ponto fraco do signo.",
-      "Não escreva introdução fora desses campos."
-    ].join("\n");
+Crie AGORA uma leitura ORIGINAL para o signo ${signo}, elemento ${elemento}.
+${contexto ? `Contexto pessoal informado pelo usuário: ${contexto}` : "Não há contexto pessoal informado."}
 
-    const answer = await env.AI.run("@cf/zai-org/glm-4.7-flash", {
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user }
-      ],
-      max_completion_tokens: 700,
-      temperature: 0.9,
-      response_format: { type: "json_object" }
-    });
+A resposta precisa ser NOVA para esta solicitação e não pode parecer uma lista de frases prontas.
 
-    const raw = typeof answer === "string" ? answer : (answer.response || "");
+Retorne SOMENTE um objeto JSON válido, sem markdown, sem explicações e sem texto antes ou depois, exatamente com estas seis propriedades:
+{"verdade":"2 ou 3 frases expondo um comportamento reconhecível do signo.","diario":"uma previsão divertida e específica para hoje.","semana":"3 ou 4 frases formando uma previsão comportamental específica da semana.","frase":"uma frase curta, extremamente compartilhável e engraçada.","exposicao":"uma nova exposição curta, diferente da verdade.","conselho":"uma frase útil que ataque exatamente o ponto fraco do signo."}`;
+
+    let answer;
+    try {
+      answer = await env.AI.run("@cf/zai-org/glm-4.7-flash", {
+        prompt,
+        max_tokens: 700,
+        temperature: 0.9
+      });
+    } catch (aiError) {
+      // Fallback para outro modelo disponível no Workers AI caso o modelo principal esteja temporariamente indisponível.
+      answer = await env.AI.run("@cf/google/gemma-3-12b-it", {
+        prompt,
+        max_tokens: 700,
+        temperature: 0.9
+      });
+    }
+
+    let raw = "";
+    if (typeof answer === "string") {
+      raw = answer;
+    } else if (answer && typeof answer.response === "string") {
+      raw = answer.response;
+    } else if (answer && answer.result && typeof answer.result.response === "string") {
+      raw = answer.result.response;
+    } else if (answer && Array.isArray(answer.choices) && answer.choices[0]?.message?.content) {
+      raw = answer.choices[0].message.content;
+    }
+
+    if (!raw) throw new Error("O Workers AI não retornou conteúdo de texto.");
+
     let parsed;
-
     try {
       parsed = JSON.parse(raw);
     } catch {
-      const match = String(raw).match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("A IA não retornou um JSON válido.");
+      const cleaned = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
+      const match = cleaned.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error("A IA não retornou o formato esperado.");
       parsed = JSON.parse(match[0]);
     }
 
