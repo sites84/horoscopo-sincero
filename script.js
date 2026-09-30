@@ -254,7 +254,80 @@ function escolherDiario(signo){
   if(!lista.length) return "";
   const hoje=new Date();
   const chave=hoje.getFullYear()*10000+(hoje.getMonth()+1)*100+hoje.getDate();
-  return lista[(chave+ordem.indexOf(signo))%lista.length];
+  return gerarLeitura(signo,"diario");
+}
+
+function hashTexto(texto){
+  let h=2166136261;
+  for(let i=0;i<texto.length;i++){h^=texto.charCodeAt(i);h=Math.imul(h,16777619);}
+  return h>>>0;
+}
+
+function gerarUnico(chave, opcoes){
+  if(!opcoes.length) return "";
+  let usados=[];
+  try{usados=JSON.parse(localStorage.getItem("hs_usados_"+chave)||"[]");}catch(e){usados=[];}
+  const disponiveis=opcoes.filter((x,i)=>!usados.includes(hashTexto(x)));
+  const pool=disponiveis.length?disponiveis:opcoes;
+  const texto=pool[Math.floor(Math.random()*pool.length)];
+  const id=hashTexto(texto);
+  if(!usados.includes(id)) usados.push(id);
+  if(usados.length>300) usados=usados.slice(-200);
+  try{localStorage.setItem("hs_usados_"+chave,JSON.stringify(usados));}catch(e){}
+  return texto;
+}
+
+function gerarLeitura(signo,campo){
+  const s=signos[signo];
+  const verdades=[
+    "Você tem uma tendência de "+(s.elemento==="Fogo"?"agir antes de pensar":s.elemento==="Terra"?"segurar mudanças até ter certeza":s.elemento==="Ar"?"pensar em possibilidades demais":"sentir tudo com intensidade")+".",
+    "Seu ponto forte é "+s.super.toLowerCase().replace(/^você /,"")+" — mas isso também pode virar exagero quando você está sob pressão.",
+    "Seu defeito mais visível é "+s.defeito.toLowerCase().replace(/^você /,"")+" E sim, provavelmente alguém já percebeu.",
+    "A parte que você tenta esconder é esta: "+s.verdade.charAt(0).toLowerCase()+s.verdade.slice(1),
+    "Madame olhou seu signo, seu elemento e seu histórico cósmico imaginário. O resultado é simples: "+s.conselho
+  ];
+  const semanas=[
+    "Nesta semana, "+s.semana.charAt(0).toLowerCase()+s.semana.slice(1),
+    "O tema da semana será "+s.elemento.toLowerCase()+": você vai precisar equilibrar sua tendência de "+(s.elemento==="Fogo"?"agir rápido":s.elemento==="Terra"?"resistir ao novo":s.elemento==="Ar"?"mudar de ideia":"absorver o clima dos outros")+".",
+    "Uma situação vai colocar seu defeito fatal à prova. A recomendação é simples: "+s.conselho,
+    "Sua semana mistura seu superpoder com seu ponto fraco. Você pode usar "+s.super.toLowerCase().replace(/^você /,"")+" a seu favor, desde que não deixe "+s.defeito.toLowerCase().replace(/^você /,"")+" dominar a situação.",
+    "O universo não marcou reunião, então trate esta semana como ela é: "+s.semana.charAt(0).toLowerCase()+s.semana.slice(1)
+  ];
+  const diarios=[
+    "Hoje, "+s.conselho.charAt(0).toLowerCase()+s.conselho.slice(1),
+    "Hoje seu signo pede uma coisa simples: "+(s.elemento==="Fogo"?"pense antes de reagir.":s.elemento==="Terra"?"aceite uma pequena mudança.":s.elemento==="Ar"?"termine uma coisa antes de começar outra.":"não carregue emoções que não são suas."),
+    "Hoje seu superpoder pode ajudar, desde que você não deixe seu defeito fatal assumir o volante.",
+    "Hoje alguém pode perceber exatamente aquilo que você tenta esconder. Não adianta culpar Mercúrio.",
+    "Hoje é um bom dia para observar seu comportamento antes de culpar o universo por ele."
+  ];
+  if(campo==="verdade") return gerarUnico(signo+"_verdade",verdades);
+  if(campo==="semana") return gerarUnico(signo+"_semana",semanas);
+  if(campo==="diario") return gerarUnico(signo+"_diario",diarios);
+  return "";
+}
+
+function gerarFraseCompartilhavel(signo){
+  const s=signos[signo];
+  const opcoes=[
+    "Meu signo é "+s.nome+" e aparentemente meu defeito já estava escrito nas estrelas.",
+    "Madame Verônica descobriu que meu superpoder é "+s.super.toLowerCase().replace(/^você /,"")+" e meu problema é "+s.defeito.toLowerCase().replace(/^você /,""),
+    s.nome+" não é problema. O problema é que eu levo meu signo a sério demais.",
+    "Eu vim procurar respostas e saí com uma exposição baseada no meu signo.",
+    "Meu horóscopo disse: "+s.conselho
+  ];
+  return gerarUnico(signo+"_compartilhar",opcoes);
+}
+
+function gerarExposicao(signo){
+  const s=signos[signo];
+  const opcoes=[
+    "Você chama de personalidade aquilo que seu próprio defeito fatal já entregou.",
+    "Seu elemento explica muita coisa, mas não absolve suas escolhas.",
+    "Você provavelmente já fez exatamente o que seu horóscopo acabou de denunciar.",
+    "Seu superpoder seria ótimo se seu defeito não aparecesse logo depois para estragar a cena.",
+    "Madame não precisa investigar muito: "+s.verdade
+  ];
+  return gerarUnico(signo+"_exposicao",opcoes);
 }
 
 function escolherVariacao(signo, campo){
@@ -366,12 +439,12 @@ document.getElementById("generateBtn").onclick=()=>{
   }
   const s=signos[selecionado];
   const contexto=document.getElementById("context").value.trim();
-  const verdade=escolherVariacao(selecionado,"verdade");
-  const semanaBase=escolherVariacao(selecionado,"semana");
+  const verdade=gerarLeitura(selecionado,"verdade");
+  const semanaBase=gerarLeitura(selecionado,"semana");
   const semanaContexto=personalizarContexto(contexto,selecionado,"semana");
   const semana=semanaContexto || semanaBase;
-  const fraseCompartilhavel=escolherFraseCompartilhavel(selecionado);
-  const exposicaoInicial=escolherExposicao(selecionado);
+  const fraseCompartilhavel=gerarFraseCompartilhavel(selecionado);
+  const exposicaoInicial=gerarExposicao(selecionado);
   const extra=contexto?'<p class="quote"><strong>Madame recebeu seu contexto:</strong> "'+escapeHtml(contexto)+'"<br><br>Agora presta atenção porque eu vou considerar isso na leitura. Não adianta fingir que não contou.</p>':"";
   result.innerHTML=
     '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque alguém precisava te contar a verdade."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
@@ -392,7 +465,7 @@ document.getElementById("generateBtn").onclick=()=>{
   document.getElementById("shareBtn").onclick=compartilharResultado;
   document.getElementById("compatSign").onchange=atualizarCompatibilidade;
   document.getElementById("exposeBtn").onclick=()=>{
-    document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Outra exposição:</strong> '+escolherExposicao(selecionado)+'</p>';
+    document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Outra exposição:</strong> '+gerarExposicao(selecionado)+'</p>';
   };
   result.scrollIntoView({behavior:"smooth",block:"start"});
 };
