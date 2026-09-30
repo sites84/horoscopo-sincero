@@ -73,7 +73,10 @@ Retorne SOMENTE um objeto JSON válido, sem markdown, sem explicações e sem te
           { role: "system", content: system },
           { role: "user", content: user }
         ],
-        max_tokens: 900,
+        chat_template_kwargs: {
+          enable_thinking: false
+        },
+        max_completion_tokens: 1200,
         temperature: 0.9
       });
     } catch (aiError) {
