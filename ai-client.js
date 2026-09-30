@@ -10,15 +10,30 @@
   };
   const API_URL = "https://horoscopo-sincero.edsonfernandesvet.workers.dev/gerar-horoscopo";
 
-  function descobrirSigno() {
-    const botoes = [...document.querySelectorAll("#zodiacGrid button")];
-    const ativo = botoes.find(b => b.classList.contains("active") || b.classList.contains("selected") || b.getAttribute("aria-pressed") === "true");
-    const botao = ativo || botoes.find(b => b.dataset.selected === "true");
+  function identificarBotao(botao) {
     if (!botao) return null;
     const bruto = String(botao.dataset.signo || botao.dataset.sign || botao.dataset.value || botao.textContent || "").trim();
-    const nome = bruto.toUpperCase().replace(/\s+/g, " ").split("\n")[0].trim();
-    const slug = slugPorNome[nome] || Object.keys(slugPorNome).find(n => bruto.toUpperCase().includes(n));
-    return slug ? { slug, nome: Object.keys(slugPorNome).find(n => slugPorNome[n] === slug), elemento: elementoPorSigno[slug] } : null;
+    const texto = bruto.toUpperCase().replace(/\s+/g, " ");
+    const nome = Object.keys(slugPorNome).find(n => texto.includes(n));
+    if (!nome) return null;
+    const slug = slugPorNome[nome];
+    return { slug, nome, elemento: elementoPorSigno[slug] };
+  }
+
+  // Guarda o signo exatamente no momento em que o usuário toca nele.
+  document.addEventListener("click", event => {
+    const botaoSigno = event.target.closest("#zodiacGrid button");
+    if (!botaoSigno) return;
+    const signo = identificarBotao(botaoSigno);
+    if (signo) window.__signoSelecionado = signo;
+  }, true);
+
+  function descobrirSigno() {
+    if (window.__signoSelecionado) return window.__signoSelecionado;
+
+    const botoes = [...document.querySelectorAll("#zodiacGrid button")];
+    const ativo = botoes.find(b => b.classList.contains("active") || b.classList.contains("selected") || b.getAttribute("aria-pressed") === "true" || b.dataset.selected === "true");
+    return identificarBotao(ativo);
   }
 
   function escapar(texto) {
@@ -29,7 +44,14 @@
     const signo = descobrirSigno();
     const contextoEl = document.getElementById("context");
     const resultado = document.getElementById("result");
-    if (!signo || !resultado) return;
+    if (!resultado) return;
+
+    if (!signo) {
+      resultado.classList.remove("hidden");
+      resultado.innerHTML = '<div class="error-box">🔮 Primeiro escolha seu signo, criatura cósmica. Madame Verônica ainda não lê mente — só lê mapa astral.</div>';
+      resultado.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
 
     const botao = document.getElementById("generateBtn");
     const textoOriginal = botao ? botao.innerHTML : "🔮 FALAR A VERDADE";
@@ -51,7 +73,7 @@
         <article class="horoscope-card">
           <h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2>
           <p><em>Porque alguém precisava te contar a verdade.</em></p>
-          <p><strong>Signo:</strong> ${escapar(signo.nome)} ${escapar((document.querySelector(`#zodiacGrid button.active, #zodiacGrid button.selected`) || {}).textContent || "")}</p>
+          <p><strong>Signo:</strong> ${escapar(signo.nome)} ${escapar(signo.slug)}</p>
           <p><strong>Elemento:</strong> ${escapar(signo.elemento)} | <strong>Nível de Sinceridade:</strong> Brutal</p>
           <hr>
           <h3>💀 A VERDADE QUE NINGUÉM TE CONTA:</h3><p>${escapar(dados.verdade)}</p>
