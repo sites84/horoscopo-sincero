@@ -1,0 +1,4 @@
+src/
+functions/
+wrangler.toml
+.assetsignore
