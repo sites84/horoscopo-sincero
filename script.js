@@ -239,6 +239,22 @@ function escolherVariacao(signo, campo){
   return lista && lista.length ? lista[Math.floor(Math.random()*lista.length)] : signos[signo][campo];
 }
 
+function atualizarCompatibilidade(){
+  const outroId=document.getElementById("compatSign")?.value;
+  const box=document.getElementById("compatResult");
+  if(!outroId || !selecionado || !box) return;
+  const a=signos[selecionado];
+  const b=signos[outroId];
+  const combina=a.combina[0]===b.nome;
+  const foge=a.foge[0]===b.nome;
+  let nivel="",leitura="";
+  if(combina){nivel="🔥 QUÍMICA PERIGOSA";leitura=a.combina[1];}
+  else if(foge){nivel="🚩 PACIÊNCIA, AMIGA";leitura=a.foge[1];}
+  else if(a.elemento===b.elemento){nivel="✨ MESMA VIBE";leitura="Vocês têm o mesmo elemento. Isso pode facilitar a sintonia, mas também significa que os dois podem achar que estão certos ao mesmo tempo. Boa sorte para quem estiver por perto.";}
+  else{nivel="🎭 OPOSTOS QUE SE ESTRANHAM";leitura="Vocês têm elementos diferentes. Pode dar certo, mas vai exigir adaptação: um quer resolver de um jeito, o outro provavelmente já inventou outro caminho.";}
+  box.innerHTML='<strong>'+nivel+'</strong><p>'+a.nome+' + '+b.nome+'</p><span>'+leitura+'</span>';
+}
+
 async function compartilharResultado(){
   if(!selecionado) return;
   const s=signos[selecionado];
@@ -342,7 +358,7 @@ document.getElementById("generateBtn").onclick=()=>{
     '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+semana+'</p>'+extra+
     '<div class="share-phrase"><h3>📲 FRASE PARA COMPARTILHAR:</h3><p class="quote">'+fraseCompartilhavel+'</p></div>'+
     '<h3>💬 CONSELHO QUE VOCÊ VAI IGNORAR (Mas eu vou dar mesmo assim):</h3><p>'+s.conselho+'</p>'+
-    '<button class="generate" id="exposeBtn" type="button">💀 ME EXPÕE MAIS</button><button class="share-btn" id="shareBtn" type="button">📲 COMPARTILHAR HORÓSCOPO</button><div id="extraExposure"></div><h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
+    '<button class="generate" id="exposeBtn" type="button">💀 ME EXPÕE MAIS</button><button class="share-btn" id="shareBtn" type="button">📲 COMPARTILHAR HORÓSCOPO</button><div id="extraExposure"></div><h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat-picker"><label for="compatSign">Escolha o signo da outra criatura:</label><select id="compatSign"><option value="">Escolha um signo...</option>'+ordem.filter(id=>id!==selecionado).map(id=>'<option value="'+id+'">'+signos[id].nome+' '+signos[id].simbolo+'</option>').join('')+'</select><div id="compatResult" class="compat-result"><strong>🔮 Escolha o outro signo para eu analisar essa combinação.</strong></div></div>'+
     '';
   result.classList.remove("hidden");
   result.classList.remove("reveal-active");
@@ -350,6 +366,7 @@ document.getElementById("generateBtn").onclick=()=>{
   result.classList.add("reveal-active");
   document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Já que você pediu:</strong> '+exposicaoInicial+'</p>';
   document.getElementById("shareBtn").onclick=compartilharResultado;
+  document.getElementById("compatSign").onchange=atualizarCompatibilidade;
   document.getElementById("exposeBtn").onclick=()=>{
     document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Outra exposição:</strong> '+escolherExposicao(selecionado)+'</p>';
   };
