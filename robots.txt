@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sites84.github.io/horoscopo-sincero/sitemap.xml
