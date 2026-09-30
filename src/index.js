@@ -41,15 +41,18 @@ Retorne SOMENTE um objeto JSON válido, sem markdown, sem explicações e sem te
 {"verdade":"2 ou 3 frases expondo um comportamento reconhecível do signo.","diario":"uma previsão divertida e específica para hoje.","semana":"3 ou 4 frases formando uma previsão comportamental específica da semana.","frase":"uma frase curta, extremamente compartilhável e engraçada.","exposicao":"uma nova exposição curta, diferente da verdade.","conselho":"uma frase útil que ataque exatamente o ponto fraco do signo."}`;
 
     let answer;
+    let modeloUsado = "@cf/zai-org/glm-4.7-flash";
+
     try {
-      answer = await env.AI.run("@cf/zai-org/glm-4.7-flash", {
+      answer = await env.AI.run(modeloUsado, {
         prompt,
         max_tokens: 700,
         temperature: 0.9
       });
     } catch (aiError) {
-      // Fallback para outro modelo disponível no Workers AI caso o modelo principal esteja temporariamente indisponível.
-      answer = await env.AI.run("@cf/google/gemma-3-12b-it", {
+      // Fallback para modelo ativo do catálogo atual do Workers AI.
+      modeloUsado = "@cf/meta/llama-3.2-3b-instruct";
+      answer = await env.AI.run(modeloUsado, {
         prompt,
         max_tokens: 700,
         temperature: 0.9
@@ -67,7 +70,7 @@ Retorne SOMENTE um objeto JSON válido, sem markdown, sem explicações e sem te
       raw = answer.choices[0].message.content;
     }
 
-    if (!raw) throw new Error("O Workers AI não retornou conteúdo de texto.");
+    if (!raw) throw new Error(`O Workers AI não retornou conteúdo de texto. Modelo: ${modeloUsado}`);
 
     let parsed;
     try {
@@ -75,7 +78,7 @@ Retorne SOMENTE um objeto JSON válido, sem markdown, sem explicações e sem te
     } catch {
       const cleaned = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
       const match = cleaned.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("A IA não retornou o formato esperado.");
+      if (!match) throw new Error(`A IA não retornou o formato esperado. Modelo: ${modeloUsado}`);
       parsed = JSON.parse(match[0]);
     }
 
