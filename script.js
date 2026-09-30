@@ -345,6 +345,9 @@ document.getElementById("generateBtn").onclick=()=>{
     '<button class="generate" id="exposeBtn" type="button">💀 ME EXPÕE MAIS</button><button class="share-btn" id="shareBtn" type="button">📲 COMPARTILHAR HORÓSCOPO</button><div id="extraExposure"></div><h3>🎯 COMPATIBILIDADE SEM MENTIRA:</h3><div class="compat"><div><strong>Combina com: '+s.combina[0]+'</strong>'+s.combina[1]+'</div><div><strong>Foge de: '+s.foge[0]+'</strong>'+s.foge[1]+'</div></div>'+
     '';
   result.classList.remove("hidden");
+  result.classList.remove("reveal-active");
+  void result.offsetWidth;
+  result.classList.add("reveal-active");
   document.getElementById("extraExposure").innerHTML='<p class="quote"><strong>💀 Já que você pediu:</strong> '+exposicaoInicial+'</p>';
   document.getElementById("shareBtn").onclick=compartilharResultado;
   document.getElementById("exposeBtn").onclick=()=>{
