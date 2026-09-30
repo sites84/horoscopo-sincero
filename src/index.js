@@ -30,28 +30,41 @@ async function gerarHoroscopo(request, env) {
       });
     }
 
-    const prompt = [
-      "Você é Madame Verônica, uma astróloga brasileira sarcástica e direta.",
-      "Crie uma leitura de horóscopo ORIGINAL para o usuário.",
-      "NUNCA copie frases prontas, não use listas de frases e não diga que está escolhendo entre textos.",
-      "Escreva uma resposta nova a cada solicitação, natural e específica para o signo.",
-      "Use o signo e o elemento como base para a leitura.",
-      "Misture astrologia de entretenimento com observações comportamentais e humor ácido sem ser ofensivo.",
-      "Não faça afirmações médicas, jurídicas ou financeiras como se fossem fatos.",
-      "",
+    const system = [
+      "Você é Madame Verônica, uma astróloga brasileira com 30 anos de experiência.",
+      "Você está cansada de horóscopos genéricos e fala de forma direta, sarcástica, íntima e engraçada.",
+      "Use gírias brasileiras naturais e trate o usuário como amiga ou amigo.",
+      "Nunca seja cruel. O alvo do humor são comportamentos e hábitos, não aparência, saúde mental ou traumas.",
+      "Não use frases genéricas de horóscopo de revista.",
+      "Crie uma leitura ORIGINAL a cada pedido, baseada no signo, elemento e contexto.",
+      "A resposta deve ser em português brasileiro."
+    ].join(" ");
+
+    const user = [
+      "Crie agora um horóscopo sincero para:",
       "SIGNO: " + signo,
       "ELEMENTO: " + elemento,
-      contexto ? "CONTEXTO DO USUÁRIO: " + contexto : "SEM CONTEXTO PESSOAL.",
+      contexto ? "CONTEXTO PESSOAL: " + contexto : "SEM CONTEXTO PESSOAL.",
       "",
-      "Retorne SOMENTE JSON válido neste formato:",
-      '{"verdade":"...","diario":"...","semana":"...","frase":"...","exposicao":"...","conselho":"..."}',
-      "Cada campo deve ser diferente dos demais e escrito especificamente para este pedido.",
-      "A resposta deve estar em português brasileiro."
+      "Preencha exatamente estes seis campos: verdade, diario, semana, frase, exposicao e conselho.",
+      "Cada campo deve ser diferente e específico.",
+      "verdade: 2 ou 3 frases expondo um comportamento reconhecível do signo.",
+      "diario: previsão divertida e específica para hoje.",
+      "semana: 3 ou 4 frases formando uma previsão comportamental da semana.",
+      "frase: uma frase curta, extremamente compartilhável e engraçada.",
+      "exposicao: uma nova exposição curta, diferente da verdade.",
+      "conselho: uma frase útil que ataque exatamente o ponto fraco do signo.",
+      "Não escreva introdução fora desses campos."
     ].join("\n");
 
     const answer = await env.AI.run("@cf/zai-org/glm-4.7-flash", {
-      prompt,
-      max_tokens: 900
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user }
+      ],
+      max_completion_tokens: 700,
+      temperature: 0.9,
+      response_format: { type: "json_object" }
     });
 
     const raw = typeof answer === "string" ? answer : (answer.response || "");
@@ -60,8 +73,8 @@ async function gerarHoroscopo(request, env) {
     try {
       parsed = JSON.parse(raw);
     } catch {
-      const match = raw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("A IA não retornou JSON válido.");
+      const match = String(raw).match(/\{[\s\S]*\}/);
+      if (!match) throw new Error("A IA não retornou um JSON válido.");
       parsed = JSON.parse(match[0]);
     }
 
@@ -84,11 +97,7 @@ async function gerarHoroscopo(request, env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-
-    if (url.pathname === "/gerar-horoscopo") {
-      return gerarHoroscopo(request, env);
-    }
-
+    if (url.pathname === "/gerar-horoscopo") return gerarHoroscopo(request, env);
     return env.ASSETS.fetch(request);
   }
 };
