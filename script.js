@@ -234,6 +234,29 @@ function personalizarContexto(contexto, signo, campo){
   return tema.frases[campo] || "";
 }
 
+const horoscopoDiario={
+  aries:["Hoje, antes de responder no impulso, conte até dez. Eu sei que para você isso parece uma eternidade, mas pode evitar uma discussão completamente desnecessária.","Hoje uma ideia vai parecer urgente. Anote primeiro. Se ainda parecer genial depois, aí você começa.","Hoje alguém pode testar sua paciência. Não transforme uma provocação pequena em campeonato mundial."],
+  touro:["Hoje uma mudança pequena pode melhorar sua rotina. Não precisa revolucionar a vida; só mexa em uma coisa que já está incomodando.","Hoje você vai querer adiar uma decisão. Escolha pelo menos o primeiro passo e pare de negociar com a própria preguiça.","Hoje conforto será tentador, mas uma tarefa pendente vai cobrar atenção. Faça antes de se acomodar."],
+  gemeos:["Hoje uma conversa pode começar sobre uma coisa e terminar em outra completamente diferente. Tente lembrar qual era o assunto original.","Hoje você vai receber informação demais. Nem toda novidade precisa virar pesquisa, opinião e grupo de WhatsApp.","Hoje escolha uma tarefa e termine antes de abrir outra. Seu cérebro vai reclamar, mas sobrevive."],
+  cancer:["Hoje uma lembrança pode aparecer sem convite. Não transforme nostalgia em obrigação de voltar para o passado.","Hoje alguém pode procurar você para conversar. Escute, mas não carregue o problema da pessoa como se fosse seu.","Hoje ficar em casa pode parecer a melhor ideia do mundo. Só não use isso para fugir de uma conversa necessária."],
+  leao:["Hoje um elogio pode chegar quando você menos espera. Aproveite sem fingir que não gostou.","Hoje uma pequena crítica pode incomodar mais do que deveria. Respire antes de transformar comentário em questão de honra.","Hoje você vai querer mostrar resultado. Mostre porque fez bem, não porque precisa provar alguma coisa para alguém."],
+  virgem:["Hoje você vai encontrar um detalhe errado que ninguém percebeu. Nem todo detalhe precisa ser corrigido imediatamente.","Hoje organizar uma coisa concreta vai aliviar sua cabeça. Só não tente organizar a vida de todo mundo junto.","Hoje aceite que alguma coisa ficará imperfeita. O mundo continua funcionando e você também."],
+  libra:["Hoje uma escolha simples pode consumir tempo demais. Escolha uma opção razoável e siga.","Hoje alguém pode pedir sua opinião. Diga o que você realmente pensa em vez de responder 'tanto faz'.","Hoje evitar uma conversa para manter a paz pode criar mais trabalho depois. Fale com clareza."],
+  escorpiao:["Hoje você pode perceber uma mudança mínima no comportamento de alguém. Antes de montar a teoria, pergunte.","Hoje uma mensagem pode fazer você analisar cada palavra. Nem toda frase tem um código secreto.","Hoje guardar silêncio pode ser melhor do que responder no calor do momento. Nem toda provocação merece investigação."],
+  sagitario:["Hoje um convite pode parecer irresistível. Antes de dizer 'bora', descubra pelo menos onde, quando e quanto custa.","Hoje você pode começar algo por puro entusiasmo. Ótimo. Só não abandone outra tarefa no caminho.","Hoje uma piada sua pode passar do ponto. Se perceber, corrija sem transformar o pedido de desculpas em outra piada."],
+  capricornio:["Hoje uma pendência vai tentar dominar sua cabeça. Resolva uma parte e pare de tratar tudo como emergência.","Hoje alguém pode pedir sua ajuda. Antes de aceitar automaticamente, veja se você realmente tem espaço para isso.","Hoje descansar pode ser mais produtivo do que inventar outra obrigação. Sua agenda não precisa vencer todos os dias."],
+  aquario:["Hoje uma ideia diferente vai aparecer. Teste, mas explique o mínimo necessário para quem depende de você.","Hoje alguém pode cobrar uma resposta emocional. Não tente transformar tudo em problema lógico.","Hoje você vai querer mudar alguma coisa só porque está cansado da rotina. Talvez mudar seja bom; só escolha o que realmente importa."],
+  peixes:["Hoje uma coincidência pode parecer muito significativa. Pode ser interessante sem necessariamente ser um sinal do universo.","Hoje você pode absorver o humor de alguém próximo. Lembre que o problema da pessoa não precisa virar seu.","Hoje faça alguma coisa concreta antes de passar horas imaginando cenários. A realidade também merece sua atenção."]
+};
+
+function escolherDiario(signo){
+  const lista=horoscopoDiario[signo] || [];
+  if(!lista.length) return "";
+  const hoje=new Date();
+  const chave=hoje.getFullYear()*10000+(hoje.getMonth()+1)*100+hoje.getDate();
+  return lista[(chave+ordem.indexOf(signo))%lista.length];
+}
+
 function escolherVariacao(signo, campo){
   const lista=variacoes[signo] && variacoes[signo][campo];
   return lista && lista.length ? lista[Math.floor(Math.random()*lista.length)] : signos[signo][campo];
@@ -353,6 +376,7 @@ document.getElementById("generateBtn").onclick=()=>{
   result.innerHTML=
     '<div class="title"><h2>🔮 HORÓSCOPO SINCERO POR MADAME VERÔNICA</h2><p class="subtitle">"Porque alguém precisava te contar a verdade."</p><div class="meta">Signo: '+s.nome+' '+s.simbolo+' · Elemento: '+s.elemento+' · Nível de Sinceridade: Brutal</div></div>'+
     '<h3>💀 A VERDADE QUE NINGUÉM TE CONTA:</h3><p>'+verdade+'</p>'+
+    '<h3>☀️ HORÓSCOPO DE HOJE — '+new Date().toLocaleDateString("pt-BR")+'</h3><p>'+escolherDiario(selecionado)+'</p>'+
     '<h3>🔥 SEU SUPERPODER (Sim, você tem um):</h3><p>'+s.super+'</p>'+
     '<h3>🚩 SEU DEFEITO FATAL (Todo mundo já percebeu, menos você):</h3><p>'+s.defeito+'</p>'+
     '<h3>📅 PREVISÃO SINCERA DA SEMANA:</h3><p>'+semana+'</p>'+extra+
