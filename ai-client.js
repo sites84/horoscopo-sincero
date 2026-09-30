@@ -8,6 +8,7 @@
     gemeos:"Ar", libra:"Ar", aquario:"Ar",
     cancer:"Água", escorpiao:"Água", peixes:"Água"
   };
+  const API_URL = "https://horoscopo-sincero.edsonfernandesvet.workers.dev/gerar-horoscopo";
 
   function descobrirSigno() {
     const botoes = [...document.querySelectorAll("#zodiacGrid button")];
@@ -38,7 +39,7 @@
     resultado.scrollIntoView({ behavior: "smooth", block: "start" });
 
     try {
-      const resposta = await fetch("/gerar-horoscopo", {
+      const resposta = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ signo: signo.nome, elemento: signo.elemento, contexto: contextoEl ? contextoEl.value : "" })
